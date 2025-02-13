@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+  web:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - /home/sergey/devops/Linux/linux-end/nginx/nginx.conf:/etc/nginx/nginx.conf
+    networks:
+      - webnet
+
+  db:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - webnet
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - /home/sergey/devops/Linux/linux-end/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - webnet
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    networks:
+      - webnet
+
+volumes:
+  pg_data:
+
+networks:
+  webnet:
+    driver: bridge
